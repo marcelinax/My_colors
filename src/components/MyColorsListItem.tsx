@@ -3,6 +3,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {toggleLike} from "../state/favouriteColorsSlice";
 import {AppDispatch, RootState} from "../store";
 import ColorFormatType from "../types/ColorFormatType";
+import parseColorFormat from "../utils/parseColorFormat";
+import parseDate from "../utils/parseDate";
 
 interface Props {
     'id': number;
@@ -21,36 +23,34 @@ interface Props {
         green: number,
         blue: number
     };
-
+    onClick: () => void;
 }
 
-const MyColorsListItem: React.FC<Props> = ({id, hex, dateCreated, numVotes, userName, formatColor, rgb, hsv}) => {
+const MyColorsListItem: React.FC<Props> = ({
+                                               id,
+                                               hex,
+                                               dateCreated,
+                                               numVotes,
+                                               userName,
+                                               formatColor,
+                                               rgb,
+                                               hsv,
+                                               onClick
+                                           }) => {
 
     const [buttonHovered, setButtonHovered] = useState<boolean>(false);
     const favouritesColorsIds = useSelector((state: RootState) => state.favouriteColors.favouritesColorsIds);
     const dispatch = useDispatch<AppDispatch>();
 
 
-    const parseColorFormat = (): string => {
-        switch (formatColor) {
-            case "hex":
-                return `#${hex}`;
-            case "hsv":
-                return `hsv(${hsv.hue}, ${hsv.saturation}, ${hsv.value})`;
-            case "rgb":
-                return `rgb(${rgb.red}, ${rgb.green}, ${rgb.blue})`;
-        }
-    };
-
-
     return (
-        <div className={'my-colors-list-item'}>
+        <div className={'my-colors-list-item'} onClick={onClick}>
 
             <div className={'my-colors-list-item-bg'} style={{backgroundColor: '#' + hex}}>
                 <div className={'my-colors-list-item-bg-color'} onClick={() => {
-                    navigator.clipboard.writeText(parseColorFormat());
+                    navigator.clipboard.writeText(parseColorFormat(formatColor, hex, hsv, rgb));
                 }}>
-                    <p>{parseColorFormat()}</p>
+                    <p>{parseColorFormat(formatColor, hex, hsv, rgb)}</p>
                 </div>
             </div>
             <div className={'my-colors-list-item-bottom'}>
@@ -59,7 +59,7 @@ const MyColorsListItem: React.FC<Props> = ({id, hex, dateCreated, numVotes, user
                     <i className={buttonHovered || favouritesColorsIds.includes(id) ? "bx bxs-heart" : "bx bx-heart"}/>{favouritesColorsIds.includes(id) ? numVotes + 1 : numVotes}
                 </button>
                 <div className={'my-colors-list-item-bottom-info'}>
-                    <p>{dateCreated}</p>
+                    <p>{parseDate(dateCreated)}</p>
                     <p>by {userName}</p>
                 </div>
             </div>

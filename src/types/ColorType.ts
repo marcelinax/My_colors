@@ -14,6 +14,7 @@ export default interface ColorType {
         saturation: number,
         value: number
     };
+    imageUrl: string;
 
 
 }
