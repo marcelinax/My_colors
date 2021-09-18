@@ -14,6 +14,7 @@ const MyColorsList: React.FC<Props> = ({colors, colorFormat}) => {
 
     const [modalColor, setModalColor] = useState<ColorType | null>(null);
 
+
     const renderModal = (): JSX.Element => {
 
         return modalColor !== null ?

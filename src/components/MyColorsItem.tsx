@@ -1,5 +1,8 @@
 import {saveAs} from "file-saver";
 import React from 'react';
+import {useDispatch, useSelector} from "react-redux";
+import {toggleLike} from "../state/favouriteColorsSlice";
+import {AppDispatch, RootState} from "../store";
 import ColorFormatType from "../types/ColorFormatType";
 import parseColorFormat from "../utils/parseColorFormat";
 import parseDate from "../utils/parseDate";
@@ -40,6 +43,8 @@ const MyColorsItem: React.FC<Props> = ({
                                            onClick
                                        }) => {
 
+    const favouritesColorsIds = useSelector((state: RootState) => state.favouriteColors.favouritesColorsIds);
+    const dispatch = useDispatch<AppDispatch>();
 
     return (
         <div className={'my-colors-item'}>
@@ -55,7 +60,9 @@ const MyColorsItem: React.FC<Props> = ({
                 <div className={'my-colors-item-box-bottom'}>
                     <div className={'my-colors-item-box-bottom-row'}>
                         <div className={'my-colors-item-box-bottom-buttons'}>
-                            <button><i className={"bx bx-heart"}></i>{numVotes}</button>
+                            <button onClick={() => dispatch(toggleLike(id))}><i
+                                className={favouritesColorsIds.includes(id) ? "bx bxs-heart" : "bx bx-heart"}/>{favouritesColorsIds.includes(id) ? numVotes + 1 : numVotes}
+                            </button>
                             <button onClick={() => {
                                 saveAs(imageUrl);
                             }}><i className="bx bx-download"/> Image
@@ -63,7 +70,7 @@ const MyColorsItem: React.FC<Props> = ({
 
                         </div>
                         <div className={'date-box'}>
-                            <p>{parseDate(dateCreated)}</p>
+                            <p>{parseDate(dateCreated)} by {userName}</p>
                         </div>
 
                     </div>

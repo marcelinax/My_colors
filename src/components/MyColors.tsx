@@ -1,5 +1,7 @@
 import axios from "axios";
 import React, {useEffect, useState} from 'react';
+import {useSelector} from "react-redux";
+import {RootState} from "../store";
 import ColorFormatType from "../types/ColorFormatType";
 import ColorType from "../types/ColorType";
 import MyColorsList from "./MyColorsList";
@@ -9,11 +11,14 @@ const MyColors: React.FC = () => {
     const [colors, setColors] = useState<ColorType[]>([]);
     const [colorCategory, setColorCategory] = useState<string>('new');
     const [colorFormat, setColorFormat] = useState<ColorFormatType>('hex');
+    const favouritesColorsIds = useSelector((state: RootState) => state.favouriteColors.favouritesColorsIds);
+    const [showOnlyFavs, setShowOnlyFavs] = useState<boolean>(false);
 
     const getColors = (): void => {
         axios.get(`https://www.colourlovers.com/api/colors/${colorCategory}?format=json`)
             .then(res => setColors(res.data as ColorType[]));
     };
+
 
     useEffect(() => {
         getColors();
@@ -21,6 +26,7 @@ const MyColors: React.FC = () => {
 
     return (
         <div className={'my-colors'}>
+
             <div className={'my-colors-top'}>
                 <div className={'my-colors-top-buttons'}>
                     <button onClick={() => setColorFormat('hex')}
@@ -32,6 +38,8 @@ const MyColors: React.FC = () => {
                     <button onClick={() => setColorFormat('hsv')}
                             className={colorFormat === 'hsv' ? 'btn--active' : ''}>HSV
                     </button>
+                    <button className={showOnlyFavs ? 'btn--active' : ''}
+                            onClick={() => setShowOnlyFavs(!showOnlyFavs)}><i className={"bx bx-heart"}></i></button>
                 </div>
             </div>
             <div className={'my-colors-side'}>
@@ -49,7 +57,9 @@ const MyColors: React.FC = () => {
                 </div>
             </div>
             <div className={'my-colors-main'}>
-                <MyColorsList colors={colors} colorFormat={colorFormat}/>
+                <MyColorsList
+                    colors={showOnlyFavs ? colors.filter(color => favouritesColorsIds.includes(color.id)) : colors}
+                    colorFormat={colorFormat}/>
             </div>
         </div>
     );

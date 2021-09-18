@@ -54,7 +54,11 @@ const MyColorsListItem: React.FC<Props> = ({
                 </div>
             </div>
             <div className={'my-colors-list-item-bottom'}>
-                <button onClick={() => dispatch(toggleLike(id))} onMouseEnter={() => setButtonHovered(true)}
+                <button onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    dispatch(toggleLike(id));
+                }} onMouseEnter={() => setButtonHovered(true)}
                         onMouseLeave={() => setButtonHovered(false)}>
                     <i className={buttonHovered || favouritesColorsIds.includes(id) ? "bx bxs-heart" : "bx bx-heart"}/>{favouritesColorsIds.includes(id) ? numVotes + 1 : numVotes}
                 </button>
