@@ -1,4 +1,7 @@
 import React, {useState} from 'react';
+import {useDispatch, useSelector} from "react-redux";
+import {toggleLike} from "../state/favouriteColorsSlice";
+import {AppDispatch, RootState} from "../store";
 import ColorFormatType from "../types/ColorFormatType";
 
 interface Props {
@@ -24,6 +27,8 @@ interface Props {
 const MyColorsListItem: React.FC<Props> = ({id, hex, dateCreated, numVotes, userName, formatColor, rgb, hsv}) => {
 
     const [buttonHovered, setButtonHovered] = useState<boolean>(false);
+    const favouritesColorsIds = useSelector((state: RootState) => state.favouriteColors.favouritesColorsIds);
+    const dispatch = useDispatch<AppDispatch>();
 
 
     const parseColorFormat = (): string => {
@@ -37,8 +42,10 @@ const MyColorsListItem: React.FC<Props> = ({id, hex, dateCreated, numVotes, user
         }
     };
 
+
     return (
         <div className={'my-colors-list-item'}>
+
             <div className={'my-colors-list-item-bg'} style={{backgroundColor: '#' + hex}}>
                 <div className={'my-colors-list-item-bg-color'} onClick={() => {
                     navigator.clipboard.writeText(parseColorFormat());
@@ -47,8 +54,10 @@ const MyColorsListItem: React.FC<Props> = ({id, hex, dateCreated, numVotes, user
                 </div>
             </div>
             <div className={'my-colors-list-item-bottom'}>
-                <button onMouseEnter={() => setButtonHovered(true)} onMouseLeave={() => setButtonHovered(false)}>
-                    <i className={buttonHovered ? "bx bxs-heart" : "bx bx-heart"}/>{numVotes}</button>
+                <button onClick={() => dispatch(toggleLike(id))} onMouseEnter={() => setButtonHovered(true)}
+                        onMouseLeave={() => setButtonHovered(false)}>
+                    <i className={buttonHovered || favouritesColorsIds.includes(id) ? "bx bxs-heart" : "bx bx-heart"}/>{favouritesColorsIds.includes(id) ? numVotes + 1 : numVotes}
+                </button>
                 <div className={'my-colors-list-item-bottom-info'}>
                     <p>{dateCreated}</p>
                     <p>by {userName}</p>
